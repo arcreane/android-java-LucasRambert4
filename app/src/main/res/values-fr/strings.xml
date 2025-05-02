@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="sort_filter">Trier / Filtrer</string>
+    <string name="no_place_selected">Aucun lieu sélectionné</string>
+    <string name="selected">Sélectionné: </string>
+
+    <string name="dark_mode">Mode sombre</string>
+    <string name="distance_units">Unités de distance</string>
+    <string name="language">Langue</string>
+    <string name="notifications">Notifications</string>
+    <string name="manage_permissions">Gérer les autorisations</string>
+    <string name="terms_of_use">Conditions d\'utilisation</string>
+    <string name="version">Version 1.0.0</string>
+    <string name="select_distance">Sélectionner la distance</string>
+    <string name="select_categories">Sélectionner les catégories</string>
+    <string name="apply_filters">Appliquer les filtres</string>
+    <string name="sample_place_name">Nom du lieu</string>
+    <string name="sample_address">123 Rue Principale, Paris</string>
+    <string name="favorite_toggle">Favori</string>
+    <string name="open_in_maps">Ouvrir dans Maps</string>
+
+    <string name="nearby_locations">Lieux à proximité</string>
+    <string name="search">Rechercher</string>
+    <string name="filters_none">Filtres : Aucun</string>
+
+    <string name="nav_home">Accueil</string>
+    <string name="nav_settings">Paramètres</string>
+
+
+    <string name="app_name">TravelBuddy</string>
+    <string name="discover_places">Découvrir des lieux</string>
+    <string name="nearby">À proximité</string>
+    <string name="favorites">Favoris</string>
+    <string name="share">Partager</string>
+    <string name="find_places">Trouver des lieux</string>
+    <string name="terms">Conditions d\'utilisation</string>
+    <string name="select_category">Sélectionner une catégorie</string>
+    <string name="image_desc">Image du carrousel</string>
+</resources>

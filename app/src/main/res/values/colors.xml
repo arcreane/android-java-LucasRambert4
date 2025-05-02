@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#121212</color>
+    <color name="darkerGray">#000000</color>
+    <color name="blue">#2196F3</color>
+    <color name="gray">#B0B0B0</color>
+    <color name="darkGray">#333333</color>
+    <color name="navColor">#000000</color>
+    <color name="navBackground">#DEDEDE</color>
+
+    <color name="background">#F5F5F5</color> <!-- Light background -->
+    <color name="textColor">#000000</color>  <!-- Light text -->
+    <color name="iconColor">#FFFFFF</color>
+    <color name="iconBackground">#000000</color>
+
+    <color name="likeIcon">#FFFFFF</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#777777</color>
+
+</resources>
