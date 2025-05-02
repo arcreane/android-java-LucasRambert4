@@ -20,14 +20,58 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/locationImage"
+            <!-- 2x2 Image Grid -->
+            <GridLayout
+                android:id="@+id/imageGrid"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/image_placeholder" />
+                android:layout_height="wrap_content"
+                android:rowCount="2"
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
 
+                <ImageView
+                    android:id="@+id/image1"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/image_placeholder" />
+
+                <ImageView
+                    android:id="@+id/image2"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/image_placeholder" />
+
+                <ImageView
+                    android:id="@+id/image3"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/image_placeholder" />
+
+                <ImageView
+                    android:id="@+id/image4"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_columnWeight="1"
+                    android:layout_rowWeight="1"
+                    android:layout_margin="4dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/image_placeholder" />
+            </GridLayout>
+
+            <!-- Text Info -->
             <TextView
                 android:id="@+id/locationName"
                 android:layout_width="wrap_content"
@@ -54,6 +98,7 @@
                 android:textColor="@color/textColor"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Favorite, Share, Map Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,9 +138,45 @@
                     android:contentDescription="@string/open_in_maps"
                     app:tint="@color/textColor" />
             </LinearLayout>
+
+            <!-- Memo Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yourNote"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/userMemo"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:hint="@string/memo"
+                android:gravity="top|start"
+                android:padding="12dp"
+                android:background="@android:drawable/edit_text"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/gray"
+                android:inputType="textMultiLine"
+                android:lines="5"
+                android:maxLines="10"
+                android:scrollbars="vertical" />
+
+            <Button
+                android:id="@+id/saveMemoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/saveNote"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="end"
+                android:backgroundTint="@color/blue"/>
         </LinearLayout>
     </ScrollView>
 
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"

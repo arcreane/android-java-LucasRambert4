@@ -11,6 +11,12 @@ public class Place {
     public List<Category> categories;
     public List<Photo> photos;
 
+    public static class Photo {
+        public String prefix;
+        public String suffix;
+    }
+
+
     private boolean isFavorite = false;
 
     public boolean isFavorite() {

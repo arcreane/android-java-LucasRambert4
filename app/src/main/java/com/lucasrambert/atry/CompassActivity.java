@@ -4,37 +4,27 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.hardware.*;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasrambert.atry.adapter.LocationAdapter;
 import com.lucasrambert.atry.api.PlacesApiService;
-import com.lucasrambert.atry.model.Place;
-import com.lucasrambert.atry.model.PlacesResponse;
+import com.lucasrambert.atry.model.*;
 import com.lucasrambert.atry.utils.LocaleHelper;
+import retrofit2.*;
 
 import java.util.*;
-import retrofit2.*;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CompassActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -46,15 +36,16 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private float currentDegree = 0f;
     private float currentAzimuth = 0f;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedClient;
+    private LocationCallback locationCallback;
     private Location currentLocation = null;
 
     private final Set<String> categoryFilters = new HashSet<>();
     private List<Place> fullPlaceList = new ArrayList<>();
     private Place selectedPlace = null;
     private int selectedDistance = 1000;
-    private final static int LOCATION_PERMISSION_CODE = 101;
 
+    private static final int LOCATION_PERMISSION_CODE = 101;
     private static final String API_KEY = "fsq3gU0Hu1Zige8xYpdsVbZLvsKTYD9VkbatAunaquDOVRA=";
 
     private static final Map<String, String> CATEGORY_MAP = new HashMap<>();
@@ -79,7 +70,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         Button sortFilterButton = findViewById(R.id.sortFilterButton);
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedClient = LocationServices.getFusedLocationProviderClient(this);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         locationAdapter = new LocationAdapter(new ArrayList<>(), place -> {
@@ -122,24 +113,33 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CODE);
         } else {
-            fetchCurrentLocation();
+            startLocationUpdates();
         }
     }
 
-    private void fetchCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+    private void startLocationUpdates() {
+        LocationRequest request = LocationRequest.create()
+                .setInterval(500) // 0.5 seconds
+                .setFastestInterval(500)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
 
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                currentLocation = location;
-                fetchPlaces();
-            } else {
-                Toast.makeText(this, "Unable to get current location", Toast.LENGTH_SHORT).show();
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult result) {
+                currentLocation = result.getLastLocation();
+                locationAdapter.updateCurrentLocation(currentLocation); // ✅ LIVE DISTANCE UPDATE
+
+                if (fullPlaceList.isEmpty()) {
+                    fetchPlaces();
+                }
             }
-        });
+        };
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
+        }
     }
 
     private void fetchPlaces() {
@@ -147,7 +147,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.foursquare.com/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
                 .build();
 
         PlacesApiService service = retrofit.create(PlacesApiService.class);
@@ -197,12 +197,16 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         if (orientationSensor != null) {
             sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_GAME);
         }
+        startLocationUpdates();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        if (fusedClient != null && locationCallback != null) {
+            fusedClient.removeLocationUpdates(locationCallback);
+        }
     }
 
     @Override
@@ -233,9 +237,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                     selectedPlace.geocodes.main.latitude, selectedPlace.geocodes.main.longitude,
                     results);
 
-            // 👇 Dynamic distance formatting
             String distanceText = formatDistance(results[0]);
-
             selectedLocationInfo.setText("Location: " + selectedPlace.name + "\n" + distanceText);
         }
     }
@@ -255,13 +257,12 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         return (Math.toDegrees(Math.atan2(x, y)) + 360) % 360;
     }
 
-    // 🔥 NEW helper method to auto-convert km/m to miles/yards
     private String formatDistance(float distanceMeters) {
         SharedPreferences preferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
         String unit = preferences.getString("unitsValue", "Kilometers");
 
         if (unit.equals("Miles")) {
-            if (distanceMeters >= 1609.34) { // 1 mile
+            if (distanceMeters >= 1609.34) {
                 return String.format("Distance: %.1f miles", distanceMeters / 1609.34);
             } else {
                 return String.format("Distance: %.0f yards", distanceMeters * 1.09361);

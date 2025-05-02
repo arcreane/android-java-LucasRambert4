@@ -27,6 +27,9 @@
     <string name="search">Search</string>
     <string name="filters_none">Filters: None</string>
 
+    <string name="yourNote">Your Note:</string>
+    <string name="memo">Write what you liked or want to remember…</string>
+    <string name="saveNote">Save Note</string>
 
 
     <string name="app_name">TravelBuddy</string>

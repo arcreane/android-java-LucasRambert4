@@ -2,31 +2,29 @@ package com.lucasrambert.atry;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasrambert.atry.adapter.LocationAdapter;
 import com.lucasrambert.atry.api.PlacesApiService;
 import com.lucasrambert.atry.model.Place;
 import com.lucasrambert.atry.model.PlacesResponse;
 import com.lucasrambert.atry.utils.LocaleHelper;
-
-import java.util.*;
 import retrofit2.*;
 
 import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.*;
 
 public class LocationsActivity extends AppCompatActivity {
 
@@ -34,7 +32,10 @@ public class LocationsActivity extends AppCompatActivity {
     private static final String API_KEY = "fsq3gU0Hu1Zige8xYpdsVbZLvsKTYD9VkbatAunaquDOVRA=";
     private static final int PLACES_PER_REQUEST = 50;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedClient;
+    private LocationCallback locationCallback;
+    private Location currentLocation;
+
     private RecyclerView recyclerView;
     private LocationAdapter locationAdapter;
     private EditText searchInput;
@@ -46,9 +47,8 @@ public class LocationsActivity extends AppCompatActivity {
 
     private final Set<String> categoryFilters = new HashSet<>();
     private String userQuery = "";
-    private String currentLatLng = "";
     private int offset = 0;
-    private int selectedDistance = 1000; // meters
+    private int selectedDistance = 1000;
     private boolean isLoading = false;
 
     private static final Map<String, String> CATEGORY_MAP = new HashMap<>();
@@ -67,7 +67,7 @@ public class LocationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locations);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedClient = LocationServices.getFusedLocationProviderClient(this);
         searchInput = findViewById(R.id.searchInput);
         filterButton = findViewById(R.id.filterButton);
         recyclerView = findViewById(R.id.locationList);
@@ -75,12 +75,11 @@ public class LocationsActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        locationAdapter = new LocationAdapter(new ArrayList<>(), null, true); // true = open detail
+        locationAdapter = new LocationAdapter(new ArrayList<>(), null, true);
         recyclerView.setAdapter(locationAdapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
-                super.onScrolled(rv, dx, dy);
                 if (!recyclerView.canScrollVertically(1) && !isLoading && categoryFilters.isEmpty()) {
                     offset += PLACES_PER_REQUEST;
                     fetchPlaces();
@@ -146,32 +145,39 @@ public class LocationsActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            fetchCurrentLocation();
+            startLocationUpdates();
         }
     }
 
-    private void fetchCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Location permission is not granted", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void startLocationUpdates() {
+        LocationRequest request = LocationRequest.create()
+                .setInterval(500)
+                .setFastestInterval(500)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
 
-        try {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if (location != null) {
-                    currentLatLng = location.getLatitude() + "," + location.getLongitude();
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult result) {
+                currentLocation = result.getLastLocation();
+                locationAdapter.updateCurrentLocation(currentLocation);
+
+                if (fullPlaceList.isEmpty()) {
                     fetchPlaces();
                 }
-            });
-        } catch (SecurityException e) {
-            Toast.makeText(this, "Location access denied", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
         }
     }
 
     private void fetchPlaces() {
-        if (currentLatLng.isEmpty()) return;
+        if (currentLocation == null) return;
+
         isLoading = true;
+        String latLng = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.foursquare.com/")
@@ -181,30 +187,16 @@ public class LocationsActivity extends AppCompatActivity {
         PlacesApiService service = retrofit.create(PlacesApiService.class);
 
         Call<PlacesResponse> call;
-
         if (!categoryFilters.isEmpty()) {
-            String categoriesParam = buildCategoryIds();
             call = service.searchPlacesWithCategoryIds(
-                    API_KEY,
-                    currentLatLng,
-                    userQuery,
-                    selectedDistance,
-                    PLACES_PER_REQUEST,
-                    "DISTANCE",
-                    "fsq_id,name,location,photos,categories,geocodes,distance",
-                    offset,
-                    categoriesParam
+                    API_KEY, latLng, userQuery, selectedDistance, PLACES_PER_REQUEST,
+                    "DISTANCE", "fsq_id,name,location,photos,categories,geocodes,distance", offset,
+                    buildCategoryIds()
             );
         } else {
             call = service.searchPlaces(
-                    API_KEY,
-                    currentLatLng,
-                    userQuery,
-                    selectedDistance,
-                    PLACES_PER_REQUEST,
-                    "DISTANCE",
-                    "fsq_id,name,location,photos,categories,geocodes,distance",
-                    offset
+                    API_KEY, latLng, userQuery, selectedDistance, PLACES_PER_REQUEST,
+                    "DISTANCE", "fsq_id,name,location,photos,categories,geocodes,distance", offset
             );
         }
 
@@ -214,7 +206,6 @@ public class LocationsActivity extends AppCompatActivity {
                 isLoading = false;
                 if (response.isSuccessful() && response.body() != null) {
                     List<Place> results = response.body().results;
-
                     List<Place> newResults = new ArrayList<>();
                     for (Place place : results) {
                         if (!seenPlaceIds.contains(place.fsq_id)) {
@@ -222,28 +213,19 @@ public class LocationsActivity extends AppCompatActivity {
                             newResults.add(place);
                         }
                     }
-
-                    if (newResults.isEmpty()) {
-                        Toast.makeText(LocationsActivity.this, "No new places found", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
                     fullPlaceList.addAll(newResults);
                     SharedPlacesStore.allLoadedPlaces = new ArrayList<>(fullPlaceList);
                     locationAdapter.updateData(fullPlaceList);
-                } else {
-                    Toast.makeText(LocationsActivity.this, "No more places", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<PlacesResponse> call, @NonNull Throwable t) {
                 isLoading = false;
-                Toast.makeText(LocationsActivity.this, "API Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(LocationsActivity.this, "API Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     private String buildCategoryIds() {
         List<String> ids = new ArrayList<>();
@@ -256,6 +238,20 @@ public class LocationsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (fusedClient != null && locationCallback != null) {
+            fusedClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -263,9 +259,7 @@ public class LocationsActivity extends AppCompatActivity {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
                 grantResults.length > 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            fetchCurrentLocation();
-        } else {
-            Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
+            startLocationUpdates();
         }
     }
 }
