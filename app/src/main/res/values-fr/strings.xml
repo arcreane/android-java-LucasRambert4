@@ -40,4 +40,5 @@
     <string name="terms">Conditions d\'utilisation</string>
     <string name="select_category">Sélectionner une catégorie</string>
     <string name="image_desc">Image du carrousel</string>
+    <string name="image">Image</string>
 </resources>

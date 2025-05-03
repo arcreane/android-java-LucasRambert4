@@ -9,6 +9,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -44,7 +45,8 @@ public class DetailedLocationActivity extends AppCompatActivity {
     private double staticDistance;
 
     private EditText userMemo;
-    private Button saveMemoButton;
+    private TextView savedMemoView;
+    private Button saveMemoButton, clearMemoButton, modifyMemoButton, createMemoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,27 +71,75 @@ public class DetailedLocationActivity extends AppCompatActivity {
         GridLayout imageGrid = findViewById(R.id.imageGrid);
         favoriteButton = findViewById(R.id.favoriteButton);
         userMemo = findViewById(R.id.userMemo);
+        savedMemoView = findViewById(R.id.savedMemoView);
         saveMemoButton = findViewById(R.id.saveMemoButton);
+        clearMemoButton = findViewById(R.id.clearMemoButton);
+        modifyMemoButton = findViewById(R.id.modifyMemoButton);
+        createMemoButton = findViewById(R.id.createMemoButton);
 
         nameView.setText(name);
         addressView.setText(address);
         categoryView.setText(category + " • " + formatDistance(this, staticDistance));
 
-        // Load and display memo
         SharedPreferences memoPrefs = getSharedPreferences("UserMemos", MODE_PRIVATE);
         String savedMemo = memoPrefs.getString(fsqId, "");
-        userMemo.setText(savedMemo);
 
-        // Save memo on button click
+        if (!savedMemo.isEmpty()) {
+            savedMemoView.setText(savedMemo);
+            savedMemoView.setVisibility(View.VISIBLE);
+            modifyMemoButton.setVisibility(View.VISIBLE);
+            clearMemoButton.setVisibility(View.VISIBLE);
+        } else {
+            createMemoButton.setVisibility(View.VISIBLE);
+        }
+
+        createMemoButton.setOnClickListener(v -> {
+            userMemo.setText("");
+            userMemo.setVisibility(View.VISIBLE);
+            saveMemoButton.setVisibility(View.VISIBLE);
+            createMemoButton.setVisibility(View.GONE);
+        });
+
+        modifyMemoButton.setOnClickListener(v -> {
+            userMemo.setText(savedMemoView.getText().toString());
+            userMemo.setVisibility(View.VISIBLE);
+            saveMemoButton.setVisibility(View.VISIBLE);
+            savedMemoView.setVisibility(View.GONE);
+            modifyMemoButton.setVisibility(View.GONE);
+        });
+
         saveMemoButton.setOnClickListener(v -> {
             String note = userMemo.getText().toString().trim();
             SharedPreferences.Editor editor = memoPrefs.edit();
             editor.putString(fsqId, note);
             editor.apply();
+
+            savedMemoView.setText(note);
+            savedMemoView.setVisibility(View.VISIBLE);
+            userMemo.setVisibility(View.GONE);
+            saveMemoButton.setVisibility(View.GONE);
+            modifyMemoButton.setVisibility(View.VISIBLE);
+            clearMemoButton.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
         });
 
-        // Populate 2x2 image grid
+        clearMemoButton.setOnClickListener(v -> {
+            SharedPreferences.Editor editor = memoPrefs.edit();
+            editor.remove(fsqId);
+            editor.apply();
+
+            userMemo.setText("");
+            savedMemoView.setText("");
+            savedMemoView.setVisibility(View.GONE);
+            userMemo.setVisibility(View.GONE);
+            saveMemoButton.setVisibility(View.GONE);
+            clearMemoButton.setVisibility(View.GONE);
+            modifyMemoButton.setVisibility(View.GONE);
+            createMemoButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Note cleared", Toast.LENGTH_SHORT).show();
+        });
+
+        // Populate image grid
         if (imageUrls != null) {
             int count = Math.min(4, imageUrls.size());
             for (int i = 0; i < count; i++) {
@@ -147,7 +197,7 @@ public class DetailedLocationActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.homeFragment) {
-                finish(); // Go back
+                finish();
                 return true;
             } else if (item.getItemId() == R.id.settingsFragment) {
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -197,8 +247,8 @@ public class DetailedLocationActivity extends AppCompatActivity {
             fusedClient.removeLocationUpdates(locationCallback);
         }
 
-        // Auto-save memo on pause
-        if (userMemo != null && fsqId != null) {
+        // Auto-save memo if visible
+        if (userMemo != null && userMemo.getVisibility() == View.VISIBLE && fsqId != null) {
             SharedPreferences memoPrefs = getSharedPreferences("UserMemos", MODE_PRIVATE);
             SharedPreferences.Editor editor = memoPrefs.edit();
             editor.putString(fsqId, userMemo.getText().toString().trim());

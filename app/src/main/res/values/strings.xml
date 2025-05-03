@@ -43,8 +43,7 @@
     <string name="manage_permissions">Manage Permissions</string>
     <string name="terms_of_use">Terms of Use</string>
     <string name="version">Version 1.0.0</string>
-
-
+    <string name="image">Image</string>
 
 
 </resources>
