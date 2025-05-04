@@ -37,6 +37,7 @@
                     android:layout_rowWeight="1"
                     android:layout_margin="4dp"
                     android:scaleType="centerCrop"
+                    android:clipToOutline="true"
                     android:background="@drawable/image_placeholder" />
                 <ImageView
                     android:id="@+id/image2"
@@ -46,6 +47,7 @@
                     android:layout_rowWeight="1"
                     android:layout_margin="4dp"
                     android:scaleType="centerCrop"
+                    android:clipToOutline="true"
                     android:background="@drawable/image_placeholder" />
                 <ImageView
                     android:id="@+id/image3"
@@ -55,6 +57,7 @@
                     android:layout_rowWeight="1"
                     android:layout_margin="4dp"
                     android:scaleType="centerCrop"
+                    android:clipToOutline="true"
                     android:background="@drawable/image_placeholder" />
                 <ImageView
                     android:id="@+id/image4"
@@ -64,6 +67,7 @@
                     android:layout_rowWeight="1"
                     android:layout_margin="4dp"
                     android:scaleType="centerCrop"
+                    android:clipToOutline="true"
                     android:background="@drawable/image_placeholder" />
             </GridLayout>
 
@@ -151,8 +155,8 @@
                         android:padding="12dp"
                         android:layout_marginBottom="4dp"
                         android:textColor="@color/textColor"
-                        android:textSize="16sp"
-                        android:background="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        android:background="@color/white"
                         android:visibility="gone" />
 
                     <!-- Editable input -->

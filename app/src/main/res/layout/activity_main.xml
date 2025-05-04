@@ -24,7 +24,9 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation"
         android:fillViewport="true"
-        android:padding="24dp">
+        android:paddingTop="24dp"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -150,8 +152,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/find_places"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/blue" />
+                android:textColor="@color/background"
+                android:backgroundTint="@android:color/transparent"
+                android:shadowColor="@color/black" />
         </LinearLayout>
     </ScrollView>
 

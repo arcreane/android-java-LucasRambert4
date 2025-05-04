@@ -23,12 +23,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.location.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasrambert.atry.utils.FavoriteUtils;
 import com.lucasrambert.atry.utils.LocaleHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DetailedLocationActivity extends AppCompatActivity {
 
@@ -57,7 +61,7 @@ public class DetailedLocationActivity extends AppCompatActivity {
         // Get data from intent
         String name = getIntent().getStringExtra("name");
         String address = getIntent().getStringExtra("address");
-        ArrayList<String> imageUrls = getIntent().getStringArrayListExtra("image_urls");
+
         category = getIntent().getStringExtra("category");
         staticDistance = getIntent().getDoubleExtra("distance", 0);
         targetLat = getIntent().getDoubleExtra("lat", 0);
@@ -139,26 +143,27 @@ public class DetailedLocationActivity extends AppCompatActivity {
             Toast.makeText(this, "Note cleared", Toast.LENGTH_SHORT).show();
         });
 
-        // Populate image grid
+        // In your Activity's onCreate()
+        ArrayList<String> imageUrls = getIntent().getStringArrayListExtra("image_urls");
+
+        ImageView image1 = findViewById(R.id.image1);
+        ImageView image2 = findViewById(R.id.image2);
+        ImageView image3 = findViewById(R.id.image3);
+        ImageView image4 = findViewById(R.id.image4);
+
+        List<ImageView> imageViews = Arrays.asList(image1, image2, image3, image4);
+
         if (imageUrls != null) {
             int count = Math.min(4, imageUrls.size());
             for (int i = 0; i < count; i++) {
-                ImageView imageView = new ImageView(this);
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = 0;
-                params.height = GridLayout.LayoutParams.WRAP_CONTENT;
-                params.columnSpec = GridLayout.spec(i % 2, 1f);
-                params.rowSpec = GridLayout.spec(i / 2, 1f);
-                params.setMargins(8, 8, 8, 8);
-                imageView.setLayoutParams(params);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                RequestOptions options = new RequestOptions()
+                        .transform(new RoundedCorners(16)); // 16px corner radius
 
                 Glide.with(this)
                         .load(imageUrls.get(i))
+                        .apply(options)
                         .placeholder(R.drawable.image_placeholder)
-                        .into(imageView);
-
-                imageGrid.addView(imageView);
+                        .into(imageViews.get(i));
             }
         }
 
