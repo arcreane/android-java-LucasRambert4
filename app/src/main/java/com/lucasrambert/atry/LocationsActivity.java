@@ -1,6 +1,8 @@
 package com.lucasrambert.atry;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -67,12 +69,15 @@ public class LocationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locations);
 
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNav);
+        bottomNavigation.setSelectedItemId(R.id.nav_home);
+
         fusedClient = LocationServices.getFusedLocationProviderClient(this);
         searchInput = findViewById(R.id.searchInput);
         filterButton = findViewById(R.id.filterButton);
         recyclerView = findViewById(R.id.locationList);
         appliedFiltersText = findViewById(R.id.appliedFiltersText);
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         locationAdapter = new LocationAdapter(new ArrayList<>(), null, true);
@@ -112,12 +117,20 @@ public class LocationsActivity extends AppCompatActivity {
             sheet.show(getSupportFragmentManager(), "FilterBottomSheet");
         });
 
-        bottomNav.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.homeFragment) {
-                finish();
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
-            } else if (item.getItemId() == R.id.settingsFragment) {
-                startActivity(new android.content.Intent(this, SettingsActivity.class));
+            } else if (itemId == R.id.nav_nearby) {
+                startActivity(new Intent(this, CompassActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                startActivity(new Intent(this, FavoritesActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_settings) {
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             }
             return false;

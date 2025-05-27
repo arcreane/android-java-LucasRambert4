@@ -19,153 +19,58 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavigation"
-        android:fillViewport="true"
-        android:paddingTop="24dp"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="0dp">
+        android:padding="24dp">
 
-        <LinearLayout
+        <!-- Title at top -->
+        <TextView
+            android:shadowColor="@color/background"
+            android:shadowDx="4"
+            android:shadowDy="4"
+            android:shadowRadius="6"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/discover_places"
+            android:textColor="@color/textColor"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:padding="6dp" />
+
+
+        <!-- Find Places Button ~90% down -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/findPlacesButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/discover_places"
-                android:textColor="@color/textColor"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="36dp" />
-
-            <LinearLayout
-                android:id="@+id/iconRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="430dp">
-
-                <!-- Nearby -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
-
-                    <FrameLayout
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/icon_background"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="6dp"
-                            android:src="@drawable/ic_nearby"
-                            android:tint="@color/iconColor" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nearby"
-                        android:textColor="@color/textColor"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <!-- Favorites -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
-
-                    <FrameLayout
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/icon_background"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="6dp"
-                            android:src="@drawable/ic_favorite"
-                            android:tint="@color/iconColor" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/favorites"
-                        android:textColor="@color/textColor"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <!-- Share -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal">
-
-                    <FrameLayout
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/icon_background"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="6dp"
-                            android:src="@drawable/ic_share"
-                            android:tint="@color/iconColor" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/share"
-                        android:textColor="@color/textColor"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/findPlacesButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/find_places"
-                android:textAllCaps="false"
-                android:textColor="@color/background"
-                android:backgroundTint="@android:color/transparent"
-                android:shadowColor="@color/black" />
-        </LinearLayout>
-    </ScrollView>
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="90dp"
+            android:text="@string/find_places"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_frosted_amber"
+            app:backgroundTint="@null"
+            android:elevation="8dp"
+            android:shadowColor="#66000000"/>
+    </RelativeLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:elevation="0dp"
         android:background="@color/navBackground"
         android:backgroundTint="@color/navBackground"
+        app:elevation="0dp"
+        app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/navColor"
         app:itemTextColor="@color/navColor"
         app:menu="@menu/bottom_nav_menu" />

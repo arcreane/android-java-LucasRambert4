@@ -13,6 +13,8 @@
     <color name="textColor">#000000</color>  <!-- Light text -->
     <color name="iconColor">#FFFFFF</color>
     <color name="iconBackground">#000000</color>
+    <color name="cardBackground">#FFFFFF</color>
+    <color name="backgroundDarker">#A0A0A0</color>
 
     <color name="likeIcon">#FFFFFF</color>
     <color name="textColorPrimary">#000000</color>

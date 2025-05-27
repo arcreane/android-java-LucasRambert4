@@ -63,12 +63,13 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         LocaleHelper.applyLanguage(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compass);
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setSelectedItemId(R.id.nav_nearby);
 
         compassArrow = findViewById(R.id.compassInner);
         selectedLocationInfo = findViewById(R.id.selectedPlaceInfo);
         locationList = findViewById(R.id.locationListRecyclerView);
         Button sortFilterButton = findViewById(R.id.sortFilterButton);
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
 
         fusedClient = LocationServices.getFusedLocationProviderClient(this);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -94,10 +95,18 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         });
 
         bottomNavigation.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.homeFragment) {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
                 startActivity(new Intent(this, MainActivity.class));
                 return true;
-            } else if (item.getItemId() == R.id.settingsFragment) {
+            } else if (itemId == R.id.nav_nearby) {
+                // Already in Nearby (CompassActivity), just return true
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                startActivity(new Intent(this, FavoritesActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_settings) {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             }

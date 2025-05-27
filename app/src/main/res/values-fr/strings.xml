@@ -24,12 +24,14 @@
     <string name="search">Rechercher</string>
     <string name="filters_none">Filtres : Aucun</string>
 
-    <string name="nav_home">Accueil</string>
-    <string name="nav_settings">Paramètres</string>
 
-    <string name="yourNote">Your Note:</string>
-    <string name="memo">Write what you liked or want to remember…</string>
-    <string name="saveNote">Save Note</string>
+    <string name="yourNote">Votre note :</string>
+    <string name="memo">Écrivez ce que vous avez aimé ou ce que vous voulez retenir…</string>
+    <string name="saveNote">Enregistrer la note</string>
+
+    <string name="home">Accueil</string>
+    <string name="settings">Paramètres</string>
+
 
     <string name="app_name">TravelBuddy</string>
     <string name="discover_places">Découvrir des lieux</string>
@@ -41,4 +43,10 @@
     <string name="select_category">Sélectionner une catégorie</string>
     <string name="image_desc">Image du carrousel</string>
     <string name="image">Image</string>
+    <string name="your_favourites">Vos favoris</string>
+
+    <string name="create">Créer</string>
+    <string name="modify">Modifier</string>
+    <string name="clear">Effacer</string>
+    <string name="save">Enregistrer</string>
 </resources>

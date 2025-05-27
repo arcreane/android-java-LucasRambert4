@@ -122,6 +122,7 @@
         android:layout_height="wrap_content"
         android:background="@color/navBackground"
         android:backgroundTint="@color/navBackground"
+        app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/navColor"
         app:itemTextColor="@color/navColor"
         app:menu="@menu/bottom_nav_menu"

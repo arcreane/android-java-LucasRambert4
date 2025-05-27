@@ -1,11 +1,8 @@
 package com.lucasrambert.atry;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,21 +12,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasrambert.atry.utils.LocaleHelper;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private Switch darkModeSwitch, notificationsSwitch;
+    private Switch darkModeSwitch;
     private Spinner unitsSpinner, languageSpinner;
     private TextView permissionsLink, termsLink;
-    private BottomNavigationView bottomNavigation;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
-    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
     private boolean isFirstLanguageSelection = true;
 
     @Override
@@ -45,25 +38,21 @@ public class SettingsActivity extends AppCompatActivity {
         darkModeSwitch = findViewById(R.id.darkModeSwitch);
         unitsSpinner = findViewById(R.id.unitsSpinner);
         languageSpinner = findViewById(R.id.languageSpinner);
-        notificationsSwitch = findViewById(R.id.notificationsSwitch);
         permissionsLink = findViewById(R.id.permissionsLink);
         termsLink = findViewById(R.id.termsLink);
-        bottomNavigation = findViewById(R.id.bottomNavigation);
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setSelectedItemId(R.id.nav_settings);
 
         // Dark Mode
         boolean isDarkMode = preferences.getBoolean("darkMode", false);
         darkModeSwitch.setChecked(isDarkMode);
-
         darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             editor.putBoolean("darkMode", isChecked);
             editor.apply();
 
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-
+            AppCompatDelegate.setDefaultNightMode(
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
             restartActivity();
         });
 
@@ -75,7 +64,6 @@ public class SettingsActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         unitsSpinner.setAdapter(adapter);
-
         unitsSpinner.setSelection(preferences.getInt("unitsPosition", 0));
         unitsSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
@@ -86,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) { }
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
         // Language Spinner
@@ -97,7 +85,6 @@ public class SettingsActivity extends AppCompatActivity {
         );
         languageAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         languageSpinner.setAdapter(languageAdapter);
-
         languageSpinner.setSelection(preferences.getInt("languagePosition", 0));
         languageSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
@@ -112,36 +99,13 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.putString("languageValue", selectedLanguage);
                 editor.apply();
 
-                if (selectedLanguage.equals("French")) {
-                    LocaleHelper.setLocale(SettingsActivity.this, "fr");
-                } else {
-                    LocaleHelper.setLocale(SettingsActivity.this, "en");
-                }
-
+                LocaleHelper.setLocale(SettingsActivity.this, selectedLanguage.equals("French") ? "fr" : "en");
                 Toast.makeText(SettingsActivity.this, "Language set to " + selectedLanguage, Toast.LENGTH_SHORT).show();
                 restartActivity();
             }
 
             @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) { }
-        });
-
-        // Notifications
-        notificationsSwitch.setChecked(preferences.getBoolean("notifications", true));
-        notificationsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            editor.putBoolean("notifications", isChecked);
-            editor.apply();
-
-            if (isChecked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                                REQUEST_NOTIFICATION_PERMISSION);
-                    }
-                }
-            }
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
         // Permissions link
@@ -153,16 +117,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Terms link
         termsLink.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://yourtermswebsite.com")); // <-- Your URL
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://yourtermswebsite.com"));
             startActivity(browserIntent);
         });
 
         // Bottom navigation
         bottomNavigation.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.homeFragment) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
                 startActivity(new Intent(this, MainActivity.class));
                 return true;
-            } else if (item.getItemId() == R.id.settingsFragment) {
+            } else if (itemId == R.id.nav_nearby) {
+                startActivity(new Intent(this, CompassActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                startActivity(new Intent(this, FavoritesActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_settings) {
                 return true;
             }
             return false;
@@ -175,18 +146,5 @@ public class SettingsActivity extends AppCompatActivity {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Notifications permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }

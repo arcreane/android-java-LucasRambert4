@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -16,12 +15,10 @@ import com.lucasrambert.atry.utils.LocaleHelper;
 public class MainActivity extends AppCompatActivity {
 
     Button findPlacesButton;
-    LinearLayout nearbySection, favoritesSection, shareSection;
     BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         LocaleHelper.applyLanguage(this);
 
         SharedPreferences preferences = getSharedPreferences("SettingsPrefs", MODE_PRIVATE);
@@ -36,55 +33,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 🔥 Change background image dynamically
+        // Change background image dynamically
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
         View overlayView = findViewById(R.id.overlayView);
 
         if (isDarkMode) {
-            backgroundImage.setImageResource(R.drawable.people_walking_darkmode);
+            backgroundImage.setImageResource(R.drawable.background_main);
         } else {
-            backgroundImage.setImageResource(R.drawable.people_walking);
+            backgroundImage.setImageResource(R.drawable.background_main);
         }
-
 
         findPlacesButton = findViewById(R.id.findPlacesButton);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        LinearLayout iconRow = findViewById(R.id.iconRow);
-        nearbySection = (LinearLayout) iconRow.getChildAt(0);
-        favoritesSection = (LinearLayout) iconRow.getChildAt(1);
-        shareSection = (LinearLayout) iconRow.getChildAt(2);
+        // ✅ Only call after initialization
+        bottomNavigation.setSelectedItemId(R.id.nav_home);
 
         findPlacesButton.setOnClickListener(view ->
                 startActivity(new Intent(MainActivity.this, LocationsActivity.class))
         );
 
-        nearbySection.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, CompassActivity.class))
-        );
-
-        favoritesSection.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, FavoritesActivity.class))
-        );
-
-        shareSection.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this cool place-finding app!");
-            startActivity(Intent.createChooser(shareIntent, "Share via"));
-        });
-
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            if (itemId == R.id.homeFragment) {
-                // Already in home page, do nothing or just return true
+            if (itemId == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
-            } else if (itemId == R.id.settingsFragment) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            } else if (itemId == R.id.nav_nearby) {
+                startActivity(new Intent(this, CompassActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                startActivity(new Intent(this, FavoritesActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_settings) {
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             }
             return false;
         });
     }
+
 }

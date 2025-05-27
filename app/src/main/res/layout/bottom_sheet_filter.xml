@@ -27,10 +27,10 @@
         android:valueTo="20"
         android:stepSize="1"
         android:value="1"
-        app:trackColor="@color/navBackground"
-        app:haloColor="@color/navBackground"
-        app:thumbColor="@color/navBackground"
-        app:tickColor="@color/navBackground"
+        app:trackColor="@color/textColor"
+        app:haloColor="@color/textColor"
+        app:thumbColor="@color/textColor"
+        app:tickColor="@color/textColor"
         app:trackHeight="4dp" />
 
     <!-- Current Distance Text -->
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:text="@string/apply_filters"
         android:textColor="@color/textColor"
-        android:backgroundTint="@color/navBackground"
+        android:backgroundTint="@color/backgroundDarker"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 

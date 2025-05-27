@@ -199,12 +199,20 @@ public class DetailedLocationActivity extends AppCompatActivity {
             startActivity(mapIntent);
         });
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-        bottomNav.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.homeFragment) {
-                finish();
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
-            } else if (item.getItemId() == R.id.settingsFragment) {
+            } else if (itemId == R.id.nav_nearby) {
+                startActivity(new Intent(this, CompassActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                startActivity(new Intent(this, FavoritesActivity.class));
+                return true;
+            } else if (itemId == R.id.nav_settings) {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             }
