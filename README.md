@@ -54,15 +54,17 @@
 app/
 ├── java/
 │   ├── adapter/            # RecyclerView adapters
-│   ├── api/                # Foursquare API service
 │   ├── model/              # Data classes (Place, Category etc.)
 │   ├── utils/              # Helper classes
 │   └── *.activity          # Activity classes
 ├── res/
+│   ├── drawable/           # Icons, vector assets
 │   ├── layout/             # XML layouts
 │   ├── menu/               # Bottom nav items
+│   ├── mipmap/             # App launcher icons
 │   └── values/             # Strings, colors, themes
 ```
+
 
 ## 🌟 Core Components
 
