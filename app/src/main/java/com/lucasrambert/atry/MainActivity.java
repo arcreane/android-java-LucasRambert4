@@ -3,7 +3,6 @@ package com.lucasrambert.atry;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,10 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Change background image dynamically
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
-        View overlayView = findViewById(R.id.overlayView);
 
         if (isDarkMode) {
-            backgroundImage.setImageResource(R.drawable.background_main);
+            backgroundImage.setImageResource(R.drawable.background_main_dark);
         } else {
             backgroundImage.setImageResource(R.drawable.background_main);
         }

@@ -19,7 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Switch darkModeSwitch;
     private Spinner unitsSpinner, languageSpinner;
-    private TextView permissionsLink, termsLink;
+    private TextView permissionsLink;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
@@ -39,7 +39,6 @@ public class SettingsActivity extends AppCompatActivity {
         unitsSpinner = findViewById(R.id.unitsSpinner);
         languageSpinner = findViewById(R.id.languageSpinner);
         permissionsLink = findViewById(R.id.permissionsLink);
-        termsLink = findViewById(R.id.termsLink);
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.setSelectedItemId(R.id.nav_settings);
 
@@ -115,11 +114,6 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Terms link
-        termsLink.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://yourtermswebsite.com"));
-            startActivity(browserIntent);
-        });
 
         // Bottom navigation
         bottomNavigation.setOnItemSelectedListener(item -> {
