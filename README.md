@@ -2,7 +2,7 @@
 
 # 🌍 TravelBuddy - Smart Travel Companion
 
-**Discover nearby attractions with real-time compass navigation and personalized recommendations**
+**Discover nearby attractions with real-time compass navigation**
 
 ## ✨ Key Features
 - **🧭 Live Compass Navigation** - Visual direction indicator to nearby points of interest
@@ -16,20 +16,20 @@
 
 | Component             | Technology                  |
 |-----------------------|-----------------------------|
-| **Language**          | Java                      |
+| **Language**          | Java                        |
 | **Architecture**      | MVVM                        |
-| **UI Toolkit**        | Jetpack Compose + XML       |
+| **UI Toolkit**        | XML                         |
 | **Networking**        | Retrofit + Foursquare API   |
 | **Database**          | SharedPreferences           |
 | **Location**          | FusedLocationProvider       |
-| **Dependency Injection** | Manual (No Hilt/Dagger) |
+| **Dependency Injection** | Manual (No Hilt/Dagger)  |
 
 ## 📦 Installation
 
 ### Prerequisites
 - Android Studio Flamingo (2022.2.1) or later
 - Android SDK 33 (API 33)
-- Google Maps API key
+- Foursquare API key
 
 ### Setup
 
